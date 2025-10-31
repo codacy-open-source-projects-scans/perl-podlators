@@ -1,0 +1,30 @@
+/Build
+/Build.bat
+/MANIFEST.bak
+/Makefile
+/Makefile.old
+/META.json
+/META.yml
+/MYMETA.json
+/MYMETA.yml
+/_build/
+/blib/
+/cover_db/
+/nytprof.out
+/nytprof/
+/pm_to_blib
+/podlators-*/
+/podlators-*.tar.gz
+/podlators-*.tar.gz.asc
+/scripts/pod2man
+/scripts/pod2text
+/t/tmp/
+
+# Some plenv/carton cruft
+.perl-version
+cpanfile.snapshot
+/local/
+
+# Not needed in the stand-alone podlators package, but necessary when
+# included in Perl core.
+!/Makefile.PL

@@ -1,0 +1,57 @@
+name: build
+
+on:
+  push:
+    branches-ignore:
+      - "dependabot/**"
+    tags:
+      - "release/*"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  perl-versions:
+    runs-on: ubuntu-latest
+    name: List Perl versions
+
+    outputs:
+      perl-versions: ${{ steps.action.outputs.perl-versions }}
+
+    steps:
+      - id: action
+        uses: perl-actions/perl-versions@v1
+        with:
+          since-perl: v5.12
+          with-devel: false
+
+  perl:
+    runs-on: ubuntu-latest
+    name: "Perl ${{ matrix.perl-version }}"
+    needs: [perl-versions]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        perl-version: ${{ fromJson(needs.perl-versions.outputs.perl-versions) }}
+
+    container:
+      image: perldocker/perl-tester:${{ matrix.perl-version }}
+
+    env:
+      AUTHOR_TESTING: 1
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: perl-actions/install-with-cpm@v1.9
+        with:
+          cpanfile: "cpanfile"
+          args: "--with-suggests"
+          sudo: false
+
+      - name: Makefile.PL
+        run: perl Makefile.PL
+
+      - name: make test
+        run: make test
