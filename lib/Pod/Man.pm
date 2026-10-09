@@ -12,7 +12,7 @@
 # Modules and declarations
 ##############################################################################
 
-package Pod::Man v6.0.2;
+package Pod::Man v6.1.1;
 
 use 5.012;
 use parent qw(Pod::Simple);
@@ -1088,12 +1088,14 @@ $preamble
 .IX Title $index
 .TH $name $section $date $release $center
 .\\" For nroff, turn off justification. Always turn off hyphenation. String
-.\\" and register settings are required by groff 1.23.0 and later.
+.\\" and register settings are required by groff 1.23.0 and later. Changing
+.\\" tag separation back to 1n is required by groff 1.24.0 and later.
 .if n .ds AD l
 .if n .ad l
 .nr HY 0
 .nh
 ----END OF HEADER----
+#"# unconfuse Emacs cperl-mode
 
     # If the language was specified, output the language configuration.
     if ($self->{opt_language}) {
@@ -1466,7 +1468,12 @@ sub item_common {
 
     # Now, output the item tag itself.
     $item = $self->mapfonts($item, '\fR');
-    $self->output($self->switchquotes('.IP', $item, $$self{INDENT}));
+    if ($type eq 'bullet' || $type eq 'number') {
+        $self->output($self->switchquotes('.IP', $item, $$self{INDENT}));
+    } else {
+        $self->output(".TP $$self{INDENT}\n");
+        $self->output($self->protect("$item\n"));
+    }
     $$self{NEEDSPACE} = 0;
     $$self{ITEMS}++;
     $$self{SHIFTWAIT} = 0;
@@ -2203,7 +2210,7 @@ B<mandoc>, it's behavior is probably the same as the BSD hosts.
 
 Notes:
 
-=over 4
+=over 5
 
 =item [1]
 
